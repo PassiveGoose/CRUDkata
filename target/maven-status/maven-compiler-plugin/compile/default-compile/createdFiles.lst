@@ -1,0 +1,10 @@
+model\UserForm.class
+web\config\DatabaseConfig.class
+db\dao\UserDao.class
+web\config\AppInit.class
+db\dao\UserDaoImpl.class
+web\config\WebConfig.class
+web\controller\UserController.class
+db\service\UserServiceImpl.class
+model\User.class
+db\service\UserService.class
