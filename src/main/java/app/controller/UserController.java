@@ -1,9 +1,8 @@
-package web.controller;
+package app.controller;
 
-import db.service.UserService;
-import db.service.UserServiceImpl;
-import model.User;
-import model.UserForm;
+import app.services.UserService;
+import app.model.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -13,9 +12,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class UserController {
-    private final String errorMessage = "something is wrong";
+    private static final String ERROR_MESSAGE = "something is wrong";
 
-    private final UserService userService = new UserServiceImpl();
+    private final UserService userService;
+
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @RequestMapping(value = {"/users"}, method = RequestMethod.GET)
     public String printUsers(ModelMap model) {
@@ -25,26 +29,17 @@ public class UserController {
 
     @RequestMapping(value = { "/add_user" }, method = RequestMethod.GET)
     public String showAddUserPage(ModelMap model) {
-        UserForm userForm = new UserForm();
-        model.addAttribute("userForm", userForm);
+        model.addAttribute("user", new User());
         return "add_user";
     }
 
     @RequestMapping(value = { "/add_user" }, method = RequestMethod.POST)
-    public String addUser(ModelMap model, //
-                          @ModelAttribute("userForm") UserForm userForm) {
-        String name = userForm.getName();
-        String surname = userForm.getSurname();
-        int age = userForm.getAge();
-
-        if (name != null && !name.isEmpty()
-                && surname != null && !surname.isEmpty()
-                && age > 0) {
-            userService.saveUser(name, surname, age);
+    public String addUser(ModelMap model,
+                          @ModelAttribute("user") User user) {
+        if (userService.saveUser(user)) {
             return "redirect:/users";
         }
-
-        model.addAttribute("errorMessage", errorMessage);
+        model.addAttribute("errorMessage", ERROR_MESSAGE);
         return "add_user";
     }
 
@@ -64,18 +59,10 @@ public class UserController {
 
     @RequestMapping(value = {"/edit_user"}, params = "id", method = RequestMethod.POST)
     public String editUser(ModelMap model, @ModelAttribute("user") User user, @RequestParam int id) {
-        String name = user.getName();
-        String surname = user.getSurname();
-        int age = user.getAge();
-
-        if (name != null && !name.isEmpty()
-                && surname != null && !surname.isEmpty()
-                && age > 0) {
-            userService.updateUserById(id, name, surname, age);
+        if (userService.updateUserById(id, user)) {
             return "redirect:/users";
         }
-
-        model.addAttribute("errorMessage", errorMessage);
+        model.addAttribute("errorMessage", ERROR_MESSAGE);
         return "edit_user";
     }
 }

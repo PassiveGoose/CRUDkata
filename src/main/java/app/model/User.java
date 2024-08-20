@@ -1,4 +1,4 @@
-package model;
+package app.model;
 
 import javax.persistence.*;
 
@@ -19,12 +19,20 @@ public class User {
     @Column
     private int age;
 
-    public User() {}
+    public User() {
+        this.name = "defaultName";
+        this.surname = "defaultSurname";
+        this.age = 1;
+    }
 
     public User(String name, String surname, int age) {
         this.name = name;
         this.surname = surname;
         this.age = age;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int getId() {
